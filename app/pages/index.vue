@@ -97,8 +97,6 @@ const moveButton = () => {
 }
 
 // Navegación
-const nextScene = () => currentScene.value++
-const prevScene = () => currentScene.value--
 
 
 // Función que dispara la ráfaga de corazones
@@ -143,9 +141,54 @@ const selectFinal = (liked: boolean) => {
     currentScene.value = 5
   }
 }
+
+//audio
+// Referencia para controlar el elemento HTML de audio
+const audioRef = ref<HTMLAudioElement | null>(null)
+const isPlaying = ref(false)
+
+// Modificamos tu función existente de avanzar escena para que también encienda la música
+const nextScene = () => {
+  currentScene.value++
+  
+  // Si pasa de la intro a la primera escena, activamos la música automáticamente
+  if (currentScene.value === 1 && audioRef.value && !isPlaying.value) {
+    audioRef.value.play()
+        .then(() => { isPlaying.value = true })
+        .catch(err => console.log("El navegador bloqueó el autoplay inicial:", err))
+  }
+}
+
+// Función para que ella pueda pausar o reanudar la música si lo desea
+const toggleMusic = () => {
+  if (!audioRef.value) return
+  if (isPlaying.value) {
+    audioRef.value.pause()
+    isPlaying.value = false
+  } else {
+    audioRef.value.play()
+    isPlaying.value = true
+  }
+}
 </script>
 
 <template>
+  <!-- Elemento de audio oculto apuntando a tu archivo en la carpeta public -->
+  <audio ref="audioRef" src="/bgm.mp3" loop></audio>
+
+  <!-- Botón flotante de control musical (Solo visible si ya pasó la pantalla de inicio) -->
+  <div v-if="currentScene > 0" class="fixed top-4 right-4 z-50">
+    <UButton
+      :icon="isPlaying ? 'i-lucide-music' : 'i-lucide-music-2'"
+      :color="isPlaying ? 'primary' : 'neutral'"
+      variant="soft"
+      class="rounded-full p-3 animate-bounce"
+      @click="toggleMusic"
+    >
+      {{ isPlaying ? 'Música ON' : 'Música OFF' }}
+    </UButton>
+  </div>
+
   <div class="max-w-4xl mx-auto px-4 py-12 min-h-[80vh] flex flex-col justify-between">
     
     <div v-if="currentScene === 0" class="space-y-12 text-center my-auto transition-all duration-500">
