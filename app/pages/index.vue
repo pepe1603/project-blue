@@ -55,6 +55,7 @@ const memoryCards = [
 // Lógica interactiva para el botón "NO" (Hacer que se mueva o cambie)
 const noButtonScale = ref(1)
 const noButtonText = ref('No... u.u')
+const noButtonTransform = ref('translate(0px, 0px)')
 const attempts = ref(0)
 
 const avoidNo = () => {
@@ -77,6 +78,22 @@ const avoidNo = () => {
   }
 }
 
+// Función para hacer que el botón escape del cursor
+const moveButton = () => {
+  attempts.value++
+  
+  // Cambiamos el texto dinámicamente para darle drama
+  if (attempts.value === 1) noButtonText.value = '¿Segura? 🥺'
+  if (attempts.value === 3) noButtonText.value = 'Piénsalo dos veces... 💔'
+  if (attempts.value === 5) noButtonText.value = '¡No se vale! 🤖'
+
+  // Calculamos una posición aleatoria para el desplazamiento (X entre -150 y 150, Y entre -80 y 80)
+  const x = Math.floor(Math.random() * 300) - 150
+  const y = Math.floor(Math.random() * 160) - 80
+  
+  noButtonTransform.value = `translate(${x}px, ${y}px)`
+}
+
 // Navegación
 const nextScene = () => currentScene.value++
 const prevScene = () => currentScene.value--
@@ -90,15 +107,15 @@ const selectFinal = (liked: boolean) => {
     
     <div v-if="currentScene === 0" class="space-y-12 text-center my-auto transition-all duration-500">
       <div class="space-y-4">
-        <h1 class="text-4xl sm:text-5xl font-bold text-(--ui-text) tracking-tight animate-pulse">
+        <h1 class="text-4xl sm:text-5xl font-bold text-default tracking-tight animate-pulse">
           Hola ✨
         </h1>
-        <p class="text-lg text-(--ui-text-muted) max-w-xl mx-auto">
+        <p class="text-lg text-muted max-w-xl mx-auto">
           Por favor, lee con atención el mensaje de abajo...
         </p>
       </div>
 
-      <div class="max-w-2xl mx-auto min-h-[120px] bg-(--ui-bg-elevated) p-6 rounded-xl border border-(--ui-border)">
+      <div class="max-w-2xl mx-auto min-h-30 bg-elevated p-6 rounded-xl border border-default">
         <TypewriterText
           :items="introMessages"
           :loop="false"
@@ -116,10 +133,10 @@ const selectFinal = (liked: boolean) => {
 
     <div v-if="currentScene === 1" class="space-y-8 text-center my-auto transition-all duration-500">
       <UBadge label="Capítulo 1: La Realidad" variant="subtle" size="lg" />
-      <h2 class="text-3xl sm:text-4xl font-bold text-(--ui-text)">
+      <h2 class="text-3xl sm:text-4xl font-bold text-default">
         Tú ya lo sabes...
       </h2>
-      <p class="text-xl text-(--ui-text-muted) max-w-2xl mx-auto leading-relaxed">
+      <p class="text-xl text-muted max-w-2xl mx-auto leading-relaxed">
         No es un secreto que me gustas mucho. Y aunque a veces soy mejor escribiendo líneas de código que expresando mis sentimientos en persona, quería construir un rincón en el internet dedicado exclusivamente a ti.
       </p>
       
@@ -132,7 +149,7 @@ const selectFinal = (liked: boolean) => {
     <div v-if="currentScene === 2" class="space-y-8 transition-all duration-500">
       <div class="text-center space-y-3">
         <UBadge label="Capítulo 2: Detalles" variant="subtle" size="lg" />
-        <h2 class="text-3xl sm:text-4xl font-bold text-(--ui-text)">
+        <h2 class="text-3xl sm:text-4xl font-bold text-default">
           Tres cosas que me encantan de ti
         </h2>
       </div>
@@ -144,8 +161,8 @@ const selectFinal = (liked: boolean) => {
               <component :is="card.icon" class="w-8 h-8 text-primary-500" />
             </div>
             <UBadge :label="card.badge" variant="soft" size="sm" color="primary" />
-            <h3 class="text-xl font-bold text-(--ui-text)">{{ card.title }}</h3>
-            <p class="text-sm text-(--ui-text-muted)">{{ card.description }}</p>
+            <h3 class="text-xl font-bold text-default">{{ card.title }}</h3>
+            <p class="text-sm text-muted">{{ card.description }}</p>
           </div>
         </UCard>
       </div>
@@ -158,10 +175,10 @@ const selectFinal = (liked: boolean) => {
 
     <div v-if="currentScene === 3" class="space-y-8 text-center my-auto transition-all duration-500">
       <UBadge label="Capítulo Final: El desenlace" variant="subtle" size="lg" color="primary" />
-      <h2 class="text-4xl font-bold text-(--ui-text) tracking-tight">
+      <h2 class="text-4xl font-bold text-default tracking-tight">
         Y bueno... llegamos al final del recorrido 🧭
       </h2>
-      <p class="text-lg text-(--ui-text-muted) max-w-xl mx-auto">
+      <p class="text-lg text-muted max-w-xl mx-auto">
         Espero que te haya sacado al menos una sonrisa. Ahora te toca a ti elegir cómo termina esta historia interactiva:
       </p>
 
@@ -176,16 +193,18 @@ const selectFinal = (liked: boolean) => {
           ¡Me encantó el detalle! 🥰
         </UButton>
 
+        <!-- Alternativa No Tan Feliz (Se escapa al pasar el mouse o al intentar clickear en celulares) -->
         <UButton 
-          v-if="noButtonScale > 0"
           size="xl" 
           variant="outline" 
           color="neutral"
-          :style="{ transform: `scale(${noButtonScale})`, transition: 'all 0.2s ease' }"
-          @click="avoidNo"
+          :style="{ transform: noButtonTransform, transition: 'transform 0.2s ease-out' }"
+          @mouseenter="moveButton"
+          @click="moveButton"
         >
           {{ noButtonText }}
         </UButton>
+
       </div>
     </div>
 
@@ -194,7 +213,7 @@ const selectFinal = (liked: boolean) => {
       <h2 class="text-4xl font-bold text-primary-500">
         ¡Qué alivio! Me haces muy feliz.
       </h2>
-      <p class="text-xl text-(--ui-text-muted) max-w-lg mx-auto">
+      <p class="text-xl text-muted max-w-lg mx-auto">
         Gracias por tomarte el tiempo de jugar y ver esto. Avísame por WhatsApp cuando termines de leer esto para invitarte un helado o salir por ahí. ✨
       </p>
       <div class="pt-4">
@@ -204,10 +223,10 @@ const selectFinal = (liked: boolean) => {
 
     <div v-if="currentScene === 5" class="space-y-6 text-center my-auto transition-all duration-500">
       <div class="text-6xl">🩹</div>
-      <h2 class="text-3xl font-bold text-(--ui-text)">
+      <h2 class="text-3xl font-bold text-default">
         ¡Vaya! No te preocupes.
       </h2>
-      <p class="text-xl text-(--ui-text-muted) max-w-lg mx-auto">
+      <p class="text-xl text-muted max-w-lg mx-auto">
         Aprecio muchísimo tu honestidad. Al menos espero que el diseño y las animaciones te hayan parecido entretenidos. ¡Seguimos siendo grandes amigos! 🚀
       </p>
       <div class="pt-4">
