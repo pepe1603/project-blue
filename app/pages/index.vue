@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import confetti from 'canvas-confetti'
+
 
 useSeoMeta({
   title: 'Un Mensaje Especial ✨',
@@ -97,8 +99,49 @@ const moveButton = () => {
 // Navegación
 const nextScene = () => currentScene.value++
 const prevScene = () => currentScene.value--
+
+
+// Función que dispara la ráfaga de corazones
+const lanzarCorazones = () => {
+  const duration = 3 * 1000 // Duración de la animación: 3 segundos
+  const end = Date.now() + duration
+
+  const frame = () => {
+    // Disparar desde el lado izquierdo de la pantalla
+    confetti({
+      particleCount: 2,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0, y: 0.8 },
+      colors: ['#ff69b4', '#ff1493', '#ff4500'] // Tonos rosa y rojo
+    })
+    
+    // Disparar desde el lado derecho de la pantalla
+    confetti({
+      particleCount: 2,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1, y: 0.8 },
+      colors: ['#ff69b4', '#ff1493', '#ff4500']
+    })
+
+    if (Date.now() < end) {
+      requestAnimationFrame(frame)
+    }
+  }
+  
+  frame()
+}
+
+// Modificamos la función que ya tenías para que dispare los corazones si la respuesta es positiva
 const selectFinal = (liked: boolean) => {
-  currentScene.value = liked ? 4 : 5
+  if (liked) {
+    currentScene.value = 4
+    // Agregamos un pequeño delay de 100ms para que la pantalla alcance a renderizarse antes de la explosión
+    setTimeout(lanzarCorazones, 100)
+  } else {
+    currentScene.value = 5
+  }
 }
 </script>
 
