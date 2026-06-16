@@ -1,0 +1,30 @@
+{
+  "name": "__PROJECT_NAME__",
+  "description": "__DESCRIPTION__",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "init-project": "node scripts/init-project.js",
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "typecheck": "nuxt typecheck"
+  },
+  "dependencies": {
+    "@iconify-json/lucide": "^1.2.111",
+    "@nuxt/ui": "^4.8.2",
+    "@nuxtjs/google-fonts": "3.2.0",
+    "nuxt": "^4.4.8",
+    "nuxt-lucide-icons": "2.1.0"
+  },
+  "devDependencies": {
+    "@nuxt/eslint": "^1.15.2",
+    "eslint": "^10.4.1",
+    "typescript": "^6.0.3",
+    "vue-tsc": "^3.3.3"
+  },
+  "packageManager": "pnpm@11.5.2"
+}
