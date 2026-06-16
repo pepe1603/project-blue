@@ -22,7 +22,7 @@ export default defineNuxtConfig({
     enabled: false
   }, app: {
     head: {
-      title: '__APP_TITLE__'
+      title: 'Para Alguien Especial'
     }
   },
 
